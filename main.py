@@ -4,50 +4,52 @@ dotenv.load_dotenv()
 
 from crewai import Agent, Crew, Task
 from crewai.project import CrewBase, agent, task, crew
-from tools import count_letters
 
 @CrewBase
-class TranslatorCrew:
-    @agent
-    def translator_agent(self):
-        return Agent(
-            config=self.agents_config["translator_agent"],
-        )
+class NewsReaderAgent:
 
     @agent
-    def counter_agent(self):
+    def news_hunter_agent(self):
         return Agent(
-            config=self.agents_config["counter_agent"],
+            config=self.agents_config['news_hunter_agent'],
         )
-    
-    @task
-    def translate_task(self):
-        return Task(
-            config=self.tasks_config["translate_task"],
+
+    @agent
+    def summarizer_agent(self):
+        return Agent(
+            config=self.agents_config["summarizer_agent"],
+        )
+
+    @agent
+    def curator_agent(self):
+        return Agent(
+            config=self.agents_config["curator_agent"],
         )
 
     @task
-    def retranslate_task(self):
+    def content_harvesting_task(self):
         return Task(
-            config=self.tasks_config["retranslate_task"],
+            config=self.tasks_config["content_harvesting_task"],
         )
 
     @task
-    def count_task(self):
+    def summarization_task(self):
         return Task(
-            config=self.tasks_config["count_task"],
+            config=self.tasks_config["summarization_task"],
+        )
+
+    @task
+    def final_report_assembly_task(self):
+        return Task(
+            config=self.tasks_config["final_report_assembly_task"],
         )
 
     @crew
-    def assemble_crew(self):
+    def crew(self):
         return Crew(
-            agents=self.agents,
             tasks=self.tasks,
+            agents=self.agents,
             verbose=True,
         )
 
-TranslatorCrew().assemble_crew().kickoff(
-    inputs={
-        "sentence": "I'm Min and I like to ride my bicicle in Napoli",
-    }
-)
+NewsReaderAgent().crew().kickoff()
